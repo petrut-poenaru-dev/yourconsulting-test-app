@@ -20,6 +20,7 @@ export class MasiniComponent implements OnInit {
   cars: Car[] = [];
   loading = false;
   error = '';
+  filterText = '';
 
   modalOpen = false;
   editingId: number | null = null;
@@ -53,6 +54,25 @@ export class MasiniComponent implements OnInit {
         this.loading = false;
       }
     });
+  }
+
+  get filteredCars(): Car[] {
+    const term = this.filterText.trim().toLowerCase();
+    if (!term) {
+      return this.cars;
+    }
+    return this.cars.filter((car) =>
+      [
+        car.denumire_marca,
+        car.denumire_model,
+        String(car.an_fabricatie),
+        String(car.capacitate_cilindrica),
+        String(car.taxa_impozit)
+      ]
+        .join(' ')
+        .toLowerCase()
+        .includes(term)
+    );
   }
 
   get taxaImpozit(): number {
@@ -98,6 +118,18 @@ export class MasiniComponent implements OnInit {
 
   closeModal(): void {
     this.modalOpen = false;
+  }
+
+  deleteCar(car: Car): void {
+    if (!confirm(`Ștergi mașina ${car.denumire_marca} ${car.denumire_model}?`)) {
+      return;
+    }
+    this.carService.destroy(car.id).subscribe({
+      next: () => this.loadCars(),
+      error: () => {
+        this.error = 'Ștergerea a eșuat.';
+      }
+    });
   }
 
   submit(): void {

@@ -8,6 +8,15 @@
 
   <div *ngIf="loading" class="text-muted">Se încarcă...</div>
 
+  <div class="mb-3" *ngIf="!loading">
+    <input
+      type="text"
+      class="form-control"
+      placeholder="Filtrează..."
+      [(ngModel)]="filterText"
+    />
+  </div>
+
   <div *ngIf="!loading" class="table-responsive">
     <table class="table table-striped table-hover align-middle">
       <thead>
@@ -22,25 +31,31 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let car of cars; let i = index">
+        <tr *ngFor="let car of filteredCars; let i = index">
           <td>{{ i + 1 }}</td>
           <td>{{ car.denumire_marca }}</td>
           <td>{{ car.denumire_model }}</td>
           <td>{{ car.an_fabricatie }}</td>
           <td>{{ car.capacitate_cilindrica }}</td>
           <td>{{ car.taxa_impozit }} lei</td>
-          <td class="text-end">
+          <td class="text-end text-nowrap">
             <button
               type="button"
-              class="btn btn-sm btn-outline-secondary"
-              title="Modifică"
+              class="btn btn-sm btn-outline-secondary me-1"
               (click)="openEdit(car)"
             >
-              ✏️
+              Modifică
+            </button>
+            <button
+              type="button"
+              class="btn btn-sm btn-outline-danger"
+              (click)="deleteCar(car)"
+            >
+              Șterge
             </button>
           </td>
         </tr>
-        <tr *ngIf="cars.length === 0">
+        <tr *ngIf="filteredCars.length === 0">
           <td colspan="7" class="text-center text-muted">Nu există mașini.</td>
         </tr>
       </tbody>

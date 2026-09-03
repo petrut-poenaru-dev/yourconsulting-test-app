@@ -74,6 +74,28 @@ async function update(req, res) {
   }
 }
 
+async function removeCar(req, res) {
+  try {
+    const person = await Person.findByPk(req.params.id);
+    if (!person) {
+      return res.status(404).json({ message: 'Person not found' });
+    }
+
+    const deleted = await Junction.destroy({
+      where: { id_person: person.id, id_car: req.params.carId }
+    });
+
+    if (deleted === 0) {
+      return res.status(404).json({ message: 'Car is not assigned to this person' });
+    }
+
+    const updated = await Person.findByPk(person.id, { include: personInclude });
+    res.json(updated);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+}
+
 async function destroy(req, res) {
   try {
     const person = await Person.findByPk(req.params.id);
@@ -95,5 +117,6 @@ module.exports = {
   find,
   create,
   update,
+  removeCar,
   destroy
 };

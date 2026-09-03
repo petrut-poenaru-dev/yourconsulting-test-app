@@ -1,3 +1,35 @@
 <section class="container py-4">
   <h1 class="h3 mb-4">Mașini</h1>
+
+  <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
+
+  <div *ngIf="loading" class="text-muted">Se încarcă...</div>
+
+  <div *ngIf="!loading" class="table-responsive">
+    <table class="table table-striped table-hover align-middle">
+      <thead>
+        <tr>
+          <th scope="col">Nr. curent</th>
+          <th scope="col">Denumire marcă</th>
+          <th scope="col">Denumire model</th>
+          <th scope="col">Anul fabricației</th>
+          <th scope="col">Capacitate cilindrică</th>
+          <th scope="col">Taxa de impozit</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let car of cars; let i = index">
+          <td>{{ i + 1 }}</td>
+          <td>{{ car.denumire_marca }}</td>
+          <td>{{ car.denumire_model }}</td>
+          <td>{{ car.an_fabricatie }}</td>
+          <td>{{ car.capacitate_cilindrica }}</td>
+          <td>{{ car.taxa_impozit }} lei</td>
+        </tr>
+        <tr *ngIf="cars.length === 0">
+          <td colspan="6" class="text-center text-muted">Nu există mașini.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </section>

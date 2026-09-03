@@ -60,6 +60,7 @@ export class PersoaneComponent implements OnInit {
   cars: Car[] = [];
   loading = false;
   error = '';
+  filterText = '';
 
   modalOpen = false;
   editingId: number | null = null;
@@ -103,6 +104,22 @@ export class PersoaneComponent implements OnInit {
   loadCars(): void {
     this.carService.findAll().subscribe({
       next: (cars) => (this.cars = cars)
+    });
+  }
+
+  get filteredPersons(): Person[] {
+    const term = this.filterText.trim().toLowerCase();
+    if (!term) {
+      return this.persons;
+    }
+    return this.persons.filter((person) => {
+      const carText = person.cars
+        .map((car) => `${car.denumire_marca} ${car.denumire_model} ${car.an_fabricatie} ${car.capacitate_cilindrica} ${car.taxa_impozit}`)
+        .join(' ');
+      return [person.nume, person.prenume, person.cnp, String(person.varsta), carText]
+        .join(' ')
+        .toLowerCase()
+        .includes(term);
     });
   }
 
@@ -153,6 +170,18 @@ export class PersoaneComponent implements OnInit {
 
   closeModal(): void {
     this.modalOpen = false;
+  }
+
+  deletePerson(person: Person): void {
+    if (!confirm(`Ștergi persoana ${person.nume} ${person.prenume}?`)) {
+      return;
+    }
+    this.personService.destroy(person.id).subscribe({
+      next: () => this.loadPersons(),
+      error: () => {
+        this.error = 'Ștergerea a eșuat.';
+      }
+    });
   }
 
   submit(): void {

@@ -8,6 +8,15 @@
 
   <div *ngIf="loading" class="text-muted">Se încarcă...</div>
 
+  <div class="mb-3" *ngIf="!loading">
+    <input
+      type="text"
+      class="form-control"
+      placeholder="Filtrează..."
+      [(ngModel)]="filterText"
+    />
+  </div>
+
   <div *ngIf="!loading" class="table-responsive">
     <table class="table table-striped table-hover align-middle">
       <thead>
@@ -21,7 +30,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let person of persons; let i = index">
+        <tr *ngFor="let person of filteredPersons; let i = index">
           <td>{{ i + 1 }}</td>
           <td>{{ person.nume }} {{ person.prenume }}</td>
           <td>{{ person.cnp }}</td>
@@ -39,14 +48,21 @@
           <td class="text-end text-nowrap">
             <button
               type="button"
-              class="btn btn-sm btn-outline-secondary"
+              class="btn btn-sm btn-outline-secondary me-1"
               (click)="openEdit(person)"
             >
               Modifică
             </button>
+            <button
+              type="button"
+              class="btn btn-sm btn-outline-danger"
+              (click)="deletePerson(person)"
+            >
+              Șterge
+            </button>
           </td>
         </tr>
-        <tr *ngIf="persons.length === 0">
+        <tr *ngIf="filteredPersons.length === 0">
           <td colspan="6" class="text-center text-muted">Nu există persoane.</td>
         </tr>
       </tbody>

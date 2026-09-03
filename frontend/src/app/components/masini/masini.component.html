@@ -1,5 +1,8 @@
 <section class="container py-4">
-  <h1 class="h3 mb-4">Mașini</h1>
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0">Mașini</h1>
+    <button type="button" class="btn btn-primary" (click)="openCreate()">Adaugă</button>
+  </div>
 
   <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
 
@@ -15,6 +18,7 @@
           <th scope="col">Anul fabricației</th>
           <th scope="col">Capacitate cilindrică</th>
           <th scope="col">Taxa de impozit</th>
+          <th scope="col" class="text-end">Acțiuni</th>
         </tr>
       </thead>
       <tbody>
@@ -25,11 +29,76 @@
           <td>{{ car.an_fabricatie }}</td>
           <td>{{ car.capacitate_cilindrica }}</td>
           <td>{{ car.taxa_impozit }} lei</td>
+          <td class="text-end">
+            <button
+              type="button"
+              class="btn btn-sm btn-outline-secondary"
+              title="Modifică"
+              (click)="openEdit(car)"
+            >
+              ✏️
+            </button>
+          </td>
         </tr>
         <tr *ngIf="cars.length === 0">
-          <td colspan="6" class="text-center text-muted">Nu există mașini.</td>
+          <td colspan="7" class="text-center text-muted">Nu există mașini.</td>
         </tr>
       </tbody>
     </table>
   </div>
 </section>
+
+<div class="modal fade show d-block" *ngIf="modalOpen" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form [formGroup]="form" (ngSubmit)="submit()">
+        <div class="modal-header">
+          <h2 class="modal-title h5">{{ editingId === null ? 'Adaugă mașină' : 'Modifică mașină' }}</h2>
+          <button type="button" class="btn-close" (click)="closeModal()"></button>
+        </div>
+
+        <div class="modal-body">
+          <div *ngIf="submitted && validationErrors.length" class="alert alert-danger">
+            <div *ngFor="let message of validationErrors">{{ message }}</div>
+          </div>
+
+          <div *ngIf="saveError" class="alert alert-danger">{{ saveError }}</div>
+
+          <div class="mb-3">
+            <label class="form-label">Denumire marcă *</label>
+            <input type="text" class="form-control" maxlength="255" formControlName="denumire_marca" />
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Denumire model *</label>
+            <input type="text" class="form-control" maxlength="255" formControlName="denumire_model" />
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Anul fabricației *</label>
+            <input type="number" class="form-control" max="9999" formControlName="an_fabricatie" />
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Capacitatea cilindrică *</label>
+            <input type="number" class="form-control" max="9999" formControlName="capacitate_cilindrica" />
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Taxa de impozit</label>
+            <input type="text" class="form-control" [value]="taxaImpozit + ' lei'" disabled />
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" (click)="closeModal()">Renunță</button>
+          <button type="submit" class="btn btn-primary" [disabled]="saving">
+            {{ editingId === null ? 'Adaugă' : 'Salvează' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop fade show" *ngIf="modalOpen"></div>

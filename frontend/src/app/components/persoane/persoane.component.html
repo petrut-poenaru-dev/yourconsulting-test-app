@@ -1,5 +1,8 @@
 <section class="container py-4">
-  <h1 class="h3 mb-4">Persoane</h1>
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0">Persoane</h1>
+    <button type="button" class="btn btn-primary" (click)="openCreate()">Adaugă</button>
+  </div>
 
   <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
 
@@ -14,6 +17,7 @@
           <th scope="col">CNP</th>
           <th scope="col">Vârsta</th>
           <th scope="col">Mașini aflate în proprietate</th>
+          <th scope="col" class="text-end">Acțiuni</th>
         </tr>
       </thead>
       <tbody>
@@ -32,11 +36,79 @@
               </li>
             </ul>
           </td>
+          <td class="text-end text-nowrap">
+            <button
+              type="button"
+              class="btn btn-sm btn-outline-secondary"
+              (click)="openEdit(person)"
+            >
+              Modifică
+            </button>
+          </td>
         </tr>
         <tr *ngIf="persons.length === 0">
-          <td colspan="5" class="text-center text-muted">Nu există persoane.</td>
+          <td colspan="6" class="text-center text-muted">Nu există persoane.</td>
         </tr>
       </tbody>
     </table>
   </div>
 </section>
+
+<div class="modal fade show d-block" *ngIf="modalOpen" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form [formGroup]="form" (ngSubmit)="submit()">
+        <div class="modal-header">
+          <h2 class="modal-title h5">{{ editingId === null ? 'Adaugă persoană' : 'Modifică persoană' }}</h2>
+          <button type="button" class="btn-close" (click)="closeModal()"></button>
+        </div>
+
+        <div class="modal-body">
+          <div *ngIf="submitted && validationErrors.length" class="alert alert-danger">
+            <div *ngFor="let message of validationErrors">{{ message }}</div>
+          </div>
+
+          <div *ngIf="saveError" class="alert alert-danger">{{ saveError }}</div>
+
+          <div class="mb-3">
+            <label class="form-label">Nume *</label>
+            <input type="text" class="form-control" maxlength="255" formControlName="nume" />
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Prenume *</label>
+            <input type="text" class="form-control" maxlength="255" formControlName="prenume" />
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">CNP *</label>
+            <input type="text" class="form-control" maxlength="13" formControlName="cnp" />
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Vârsta *</label>
+            <input type="text" class="form-control" [value]="varsta ?? ''" disabled />
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Mașini</label>
+            <select class="form-select" multiple formControlName="cars" size="5">
+              <option *ngFor="let car of cars" [ngValue]="car.id">
+                {{ car.denumire_marca }} / {{ car.denumire_model }}
+              </option>
+            </select>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" (click)="closeModal()">Renunță</button>
+          <button type="submit" class="btn btn-primary" [disabled]="saving">
+            {{ editingId === null ? 'Adaugă' : 'Salvează' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop fade show" *ngIf="modalOpen"></div>
